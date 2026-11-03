@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>DB Trainer Pro</title>
+<meta name="description" content="5-day dumbbell-only floor workout — no bench needed. Six pack + forearm focus.">
+<meta name="theme-color" content="#08090F">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Inter:wght@400;500;600&display=swap">
+<style>
+:root{--bg:#08090F;--surf:#0C0E1A;--card:#111422;--card2:#161A2E;--bdr:#1C2138;--bdr2:#252D4A;--fg:#E6EAF8;--fgm:#58628C;--fgd:#222A48;--ok:#2ED158;--warn:#FF9F0A;--danger:#FF453A;color-scheme:dark}
+@media(prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#F2F4FA;--surf:#FFF;--card:#FFF;--card2:#F7F8FD;--bdr:#DDE2F0;--bdr2:#C8CEEA;--fg:#0E1228;--fgm:#7A84AA;--fgd:#CBD1E8;color-scheme:light}}
+:root[data-theme="light"]{--bg:#F2F4FA;--surf:#FFF;--card:#FFF;--card2:#F7F8FD;--bdr:#DDE2F0;--bdr2:#C8CEEA;--fg:#0E1228;--fgm:#7A84AA;--fgd:#CBD1E8;color-scheme:light}
+:root[data-theme="dark"]{--bg:#08090F;--surf:#0C0E1A;--card:#111422;--card2:#161A2E;--bdr:#1C2138;--bdr2:#252D4A;--fg:#E6EAF8;--fgm:#58628C;--fgd:#222A48;color-scheme:dark}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;font-family:'Inter',system-ui,sans-serif;font-size:14px;background:var(--bg);color:var(--fg);-webkit-tap-highlight-color:transparent}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:50;background:var(--surf);border-bottom:1px solid var(--bdr);display:flex;align-items:center;gap:12px;padding:0 max(16px,env(safe-area-inset-right,0px)) 0 max(16px,env(safe-area-inset-left,0px));height:52px}
+.topbar::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surf)}
+.brand{font-family:'Barlow Condensed',sans-serif;font-size:19px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap}
+.brand span{color:var(--h,#5B9BFF)}
+.topbar-mid{flex:1;display:flex;align-items:center;justify-content:center;gap:10px;min-width:0}
+.tclock{font-size:12px;font-weight:600;letter-spacing:.05em;font-variant-numeric:tabular-nums;color:var(--fgm)}
+.streak-pill{display:flex;align-items:center;gap:4px;padding:3px 8px;border-radius:20px;background:rgba(255,159,10,.12);color:#FF9F0A;font-size:11px;font-weight:700}
+.topbar-right{display:flex;align-items:center;gap:4px}
+.icon-btn{width:36px;height:36px;display:flex;align-items:center;justify-content:center;border-radius:8px;font-size:16px;transition:background .15s}
+.icon-btn:hover{background:var(--card2)}
+.ntabs{display:flex;background:var(--surf);border-bottom:1px solid var(--bdr);padding:0 max(16px,env(safe-area-inset-right,0px)) 0 max(16px,env(safe-area-inset-left,0px));overflow-x:auto;gap:2px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.ntabs::-webkit-scrollbar{display:none}
+.ntab{flex:1;min-width:60px;display:flex;flex-direction:column;align-items:center;padding:9px 4px 8px;font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--fgm);border-bottom:2px solid transparent;cursor:pointer;transition:color .15s;white-space:nowrap;border-top:0;border-left:0;border-right:0;background:none}
+.ntab.on{color:var(--h,#5B9BFF);border-bottom-color:var(--h,#5B9BFF)}
+.ntab-dot{width:5px;height:5px;border-radius:50%;background:var(--h,#5B9BFF);opacity:0;margin-top:3px;transition:opacity .2s}
+.ntab.done .ntab-dot{opacity:1}
+.ntab-sub{font-size:9px;letter-spacing:.04em;font-weight:600;margin-top:1px;opacity:.7}
+#panels{padding-bottom:max(80px,calc(60px + env(safe-area-inset-bottom,0px)))}
+.dpanel{display:none}.dpanel.on{display:block}
+.dhead{padding:20px max(16px,env(safe-area-inset-right,0px)) 16px max(16px,env(safe-area-inset-left,0px));background:linear-gradient(to bottom,var(--g,rgba(91,155,255,.12)),transparent)}
+.dhead-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.dname{font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;line-height:1}
+.dgoal{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--h,#5B9BFF);margin-top:4px}
+.dmeta{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.vol-chip{padding:4px 10px;border-radius:20px;background:var(--g,rgba(91,155,255,.12));border:1px solid var(--h,#5B9BFF);font-size:11px;font-weight:700;color:var(--h,#5B9BFF)}
+.prog-wrap{padding:0 max(16px,env(safe-area-inset-right,0px)) 16px max(16px,env(safe-area-inset-left,0px))}
+.prog-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.prog-label{font-size:11px;font-weight:600;color:var(--fgm);letter-spacing:.05em}
+.prog-count{font-size:11px;font-weight:700;font-variant-numeric:tabular-nums}
+.prog-bar{height:5px;border-radius:3px;background:var(--bdr);overflow:hidden}
+.prog-fill{height:100%;border-radius:3px;background:var(--h,#5B9BFF);transition:width .3s ease;width:0%}
+.mchip{padding:5px 12px;border-radius:20px;border:1px solid var(--bdr2);font-size:11px;font-weight:600;color:var(--fgm)}
+.info-bar{margin:0 max(16px,env(safe-area-inset-right,0px)) 14px max(16px,env(safe-area-inset-left,0px));padding:9px 12px;border-radius:8px;border:1px solid var(--bdr);background:var(--card);font-size:11px;color:var(--fgm);display:flex;align-items:flex-start;gap:8px;line-height:1.4}
+.info-bar .ib-icon{font-size:13px;flex-shrink:0;margin-top:1px}
+.exlist{display:flex;flex-direction:column;gap:10px;padding:0 max(16px,env(safe-area-inset-right,0px)) 0 max(16px,env(safe-area-inset-left,0px))}
+.excard{background:var(--card);border:1px solid var(--bdr);border-radius:12px;overflow:hidden}
+.ex-hd{display:flex;align-items:flex-start;gap:10px;padding:14px 14px 0 14px;cursor:pointer;user-select:none;-webkit-user-select:none}
+.ex-badge{padding:2px 7px;border-radius:4px;font-size:9px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;white-space:nowrap;flex-shrink:0;margin-top:2px}
+.ex-badge.compound{background:rgba(var(--hr,91,155,255),.18);color:var(--h,#5B9BFF)}
+.ex-badge.isolation{background:rgba(var(--hr,91,155,255),.10);color:var(--fgm);border:1px solid var(--bdr2)}
+.ex-badge.core{background:rgba(255,159,10,.15);color:#FF9F0A;border:1px solid rgba(255,159,10,.3)}
+.ex-info{flex:1;min-width:0}
+.ex-name{font-family:'Barlow Condensed',sans-serif;font-size:17px;font-weight:700;letter-spacing:.02em;line-height:1.1}
+.ex-tip{font-size:11px;color:var(--fgm);margin-top:3px;line-height:1.4}
+.ex-expand{width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:6px;background:var(--card2);font-size:12px;flex-shrink:0;transition:transform .2s;color:var(--fgm)}
+.excard.open .ex-expand{transform:rotate(180deg)}
+.ex-det{max-height:0;overflow:hidden;transition:max-height .35s ease;padding:0 14px}
+.excard.open .ex-det{max-height:400px}
+.ex-det-inner{padding:10px 0 12px;border-top:1px solid var(--bdr);margin-top:10px}
+.ex-steps{display:flex;flex-direction:column;gap:7px;margin-bottom:10px}
+.ex-step{display:flex;gap:10px;align-items:flex-start}
+.ex-step-n{width:18px;height:18px;border-radius:50%;background:var(--g,rgba(91,155,255,.12));border:1px solid var(--h,#5B9BFF);color:var(--h,#5B9BFF);font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.ex-step-txt{font-size:12px;color:var(--fg);line-height:1.5}
+.ex-mistake{display:flex;gap:8px;padding:8px 10px;border-radius:7px;background:rgba(255,69,58,.08);border:1px solid rgba(255,69,58,.2);font-size:11px;color:var(--danger);line-height:1.4;align-items:flex-start}
+.ex-mistake-icon{font-size:12px;flex-shrink:0;margin-top:1px}
+.ex-sep{height:1px;background:var(--bdr);margin:0 14px}
+.ex-tracker{padding:12px 14px}
+.w-row{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.w-btn{width:30px;height:30px;border-radius:8px;background:var(--card2);border:1px solid var(--bdr2);font-size:16px;font-weight:600;display:flex;align-items:center;justify-content:center;transition:background .1s,transform .1s;color:var(--fgm)}
+.w-btn:active{transform:scale(.88)}
+.w-val{font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:700;min-width:60px;text-align:center;font-variant-numeric:tabular-nums}
+.w-unit{font-size:11px;color:var(--fgm);font-weight:600}
+.w-hint{flex:1;text-align:right;font-size:10px;color:var(--fgm);font-style:italic}
+.w-pr{font-size:10px;font-weight:700;color:#FFD60A;letter-spacing:.03em}
+.sets-row{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.sets-label{font-size:11px;font-weight:600;color:var(--fgm);white-space:nowrap}
+.sets-chips{display:flex;gap:6px;flex:1;flex-wrap:wrap}
+.set-chip{width:38px;height:38px;border-radius:50%;border:2px solid var(--bdr2);background:var(--card2);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--fgm);cursor:pointer;transition:all .15s;font-variant-numeric:tabular-nums}
+.set-chip.done{background:var(--h,#5B9BFF);border-color:var(--h,#5B9BFF);color:#fff}
+.set-chip:active{transform:scale(.88)}
+.rest-bar{position:fixed;bottom:0;left:0;right:0;z-index:60;background:var(--surf);border-top:1px solid var(--bdr);padding:10px max(16px,env(safe-area-inset-right,0px)) max(10px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));transform:translateY(100%);transition:transform .25s ease}
+.rest-bar.on{transform:translateY(0)}
+.rest-row{display:flex;align-items:center;gap:10px}
+.rest-label{font-size:11px;font-weight:600;color:var(--fgm);flex-shrink:0}
+.rest-track{flex:1;height:4px;border-radius:2px;background:var(--bdr);overflow:hidden}
+.rest-fill{height:100%;border-radius:2px;background:var(--rh,#5B9BFF);transition:width .5s linear}
+.rest-time{font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:800;min-width:42px;text-align:right;font-variant-numeric:tabular-nums;color:var(--rh,#5B9BFF)}
+.rest-btns{display:flex;gap:6px}
+.rest-add{padding:5px 10px;border-radius:7px;background:var(--card2);border:1px solid var(--bdr2);font-size:11px;font-weight:600;color:var(--fg)}
+.rest-skip{padding:5px 10px;border-radius:7px;background:var(--card2);border:1px solid var(--bdr2);font-size:11px;font-weight:600;color:var(--fgm)}
+.rest-exname{font-size:10px;color:var(--fgm);margin-top:4px}
+.modal-wrap{position:fixed;inset:0;z-index:100;display:flex;flex-direction:column;justify-content:flex-end;pointer-events:none;opacity:0;transition:opacity .2s}
+.modal-wrap.on{opacity:1;pointer-events:auto}
+.modal-overlay{position:absolute;inset:0;background:rgba(0,0,0,.5)}
+.modal{position:relative;background:var(--surf);border-radius:16px 16px 0 0;border:1px solid var(--bdr);border-bottom:none;padding:0 max(16px,env(safe-area-inset-right,0px)) max(20px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));max-height:80vh;overflow-y:auto;-webkit-overflow-scrolling:touch;transform:translateY(100%);transition:transform .3s ease}
+.modal-wrap.on .modal{transform:translateY(0)}
+.modal-handle{width:36px;height:4px;border-radius:2px;background:var(--bdr2);margin:10px auto 16px}
+.modal-title{font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;margin-bottom:16px}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:16px}
+.cal-hdr{font-size:9px;font-weight:700;color:var(--fgm);text-align:center;letter-spacing:.04em}
+.cal-day{aspect-ratio:1;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;color:var(--fgm);background:var(--card2);border:1px solid var(--bdr)}
+.cal-day.has-data{border-color:var(--dc,#5B9BFF);background:var(--dg,rgba(91,155,255,.2));color:var(--dc,#5B9BFF)}
+.cal-day.today{outline:2px solid var(--h,#5B9BFF);outline-offset:1px}
+.stats-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:16px}
+.stat-card{background:var(--card);border:1px solid var(--bdr);border-radius:10px;padding:12px}
+.stat-n{font-family:'Barlow Condensed',sans-serif;font-size:24px;font-weight:800;font-variant-numeric:tabular-nums}
+.stat-l{font-size:10px;font-weight:600;color:var(--fgm);text-transform:uppercase;letter-spacing:.05em;margin-top:2px}
+.set-row{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--bdr)}
+.set-row:last-child{border-bottom:none}
+.set-label{font-size:13px;font-weight:600}
+.set-sub{font-size:11px;color:var(--fgm);margin-top:2px}
+.seg{display:flex;background:var(--card2);border-radius:8px;padding:3px;gap:3px}
+.seg-btn{padding:5px 12px;border-radius:6px;font-size:12px;font-weight:600;color:var(--fgm);transition:all .15s}
+.seg-btn.on{background:var(--surf);color:var(--fg);box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.rst-btn{width:100%;margin-top:16px;padding:12px;border-radius:10px;background:rgba(255,69,58,.1);border:1px solid rgba(255,69,58,.3);font-size:13px;font-weight:600;color:var(--danger);transition:background .15s;cursor:pointer}
+.rst-btn:hover{background:rgba(255,69,58,.18)}
+.celeb{position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.7);padding:20px;opacity:0;pointer-events:none;transition:opacity .3s}
+.celeb.on{opacity:1;pointer-events:auto}
+.celeb-card{background:var(--surf);border:1px solid var(--h,#5B9BFF);border-radius:16px;padding:28px 24px;max-width:300px;width:100%;text-align:center;position:relative;overflow:hidden}
+.celeb-emoji{font-size:48px;display:block;margin-bottom:12px}
+.celeb-title{font-family:'Barlow Condensed',sans-serif;font-size:26px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px}
+.celeb-sub{font-size:13px;color:var(--fgm);line-height:1.5;margin-bottom:16px}
+.celeb-ok{width:100%;padding:12px;border-radius:10px;background:var(--h,#5B9BFF);color:#fff;font-size:14px;font-weight:700;cursor:pointer}
+.particle{position:absolute;width:6px;height:6px;border-radius:2px;pointer-events:none}
+@keyframes pfloat{0%{transform:translateY(0) scale(1);opacity:.8}100%{transform:translateY(-60px) scale(0);opacity:0}}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand">DB<span>Pro</span></div>
+  <div class="topbar-mid">
+    <div class="tclock" id="tclock">00:00</div>
+    <div class="streak-pill">🔥 <span id="streak-n">0</span></div>
+  </div>
+  <div class="topbar-right">
+    <button class="icon-btn" onclick="openM('history')">📊</button>
+    <button class="icon-btn" onclick="openM('settings')">⚙️</button>
+  </div>
+</div>
+
+<div class="ntabs" id="tabs-bar" role="tablist"></div>
+<div id="panels"></div>
+
+<div class="rest-bar" id="rest-bar">
+  <div class="rest-row">
+    <div class="rest-label">REST</div>
+    <div class="rest-track"><div class="rest-fill" id="rest-fill" style="width:100%"></div></div>
+    <div class="rest-time" id="rest-time">–</div>
+    <div class="rest-btns">
+      <button class="rest-add" onclick="addRest(30)">+30s</button>
+      <button class="rest-skip" onclick="skipRest()">Skip</button>
+    </div>
+  </div>
+  <div class="rest-exname" id="rest-exname"></div>
+</div>
+
+<div class="modal-wrap" id="modal-history">
+  <div class="modal-overlay" onclick="closeM('history')"></div>
+  <div class="modal" role="dialog" aria-modal="true">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Training History</div>
+    <div id="hist-body"></div>
+  </div>
+</div>
+
+<div class="modal-wrap" id="modal-settings">
+  <div class="modal-overlay" onclick="closeM('settings')"></div>
+  <div class="modal" role="dialog" aria-modal="true">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Settings</div>
+    <div id="sett-body"></div>
+  </div>
+</div>
+
+<div class="celeb" id="celeb">
+  <div class="celeb-card" id="celeb-card">
+    <span class="celeb-emoji">🏆</span>
+    <div class="celeb-title" id="celeb-title">Day Complete!</div>
+    <div class="celeb-sub" id="celeb-sub">Great work today.</div>
+    <button class="celeb-ok" onclick="closeCeleb()">Keep Going →</button>
+  </div>
+</div>
+
+<script>
+// ── PLAN ── Dumbbells only, no bench, floor-based. Six pack + forearm focus.
+const DAYS=[
+  {
+    id:'chest_tri',label:'MON',name:'Chest + Triceps',goal:'Push Strength · Core Finisher',
+    hue:'#5B9BFF',glow:'rgba(91,155,255,.13)',hr:'91,155,255',
+    muscles:['Chest','Triceps','Serratus','Core'],
+    warmup:'5 min: arm circles × 20, slow push-ups × 10, plank 30 s',
+    cooldown:'Chest doorway stretch, overhead tricep stretch, cobra pose 3 × 20 s',
+    synergy:'Floor press trains the same muscles as bench press — the floor stops the elbows at the natural safe range, actually protecting your shoulders more.',
+    exercises:[
+      {name:'DB Floor Press',tag:'compound',sets:4,reps:'10–12',defw:22.5,rest:90,
+        tip:'Lie flat on the floor, elbows hit the ground at 60° — that natural stop protects your shoulder.',
+        steps:['Lie on floor, knees bent, feet flat. DBs at chest level, elbows at 60° from torso (not 90°).','Lower until elbows touch the floor, brief pause — no bouncing.','Drive up explosively, exhale hard. Stop just short of lockout.'],
+        mistake:'Flaring elbows to 90° — it loads the shoulder capsule, not the chest.'},
+      {name:'DB Floor Fly',tag:'isolation',sets:3,reps:'12–15',defw:12.5,rest:60,
+        tip:'Think "hugging a barrel." Constant slight bend in elbows. The stretch at the bottom is the goal.',
+        steps:['Lie flat, DBs above chest, palms facing, elbows slightly bent.','Open arms wide in an arc — feel deep chest stretch at bottom.','Squeeze pecs hard, bring DBs back up without pressing. No elbow movement.'],
+        mistake:'Progressively bending elbows turns this into a press — keep the angle fixed.'},
+      {name:'DB Pullover',tag:'compound',sets:3,reps:'12',defw:15,rest:60,
+        tip:'Hold one DB with both hands. Great for expanding the rib cage and hitting serratus — the muscle under your armpit that frames the six pack.',
+        steps:['Lie on the floor, both hands grip one DB end, arms extended overhead.','Lower DB in an arc toward the floor behind your head, feeling a rib cage stretch.','Pull back up to above chest in the same arc — lat and chest both fire.'],
+        mistake:'Bending elbows too much — this becomes a skull crusher. Keep arms long.'},
+      {name:'Floor Skull Crusher',tag:'isolation',sets:3,reps:'10–12',defw:12.5,rest:60,
+        tip:'Upper arm stays vertical and completely still. Only the forearm moves.',
+        steps:['Lie flat, DBs held over forehead, arms straight and vertical.','Hinge at elbows only — lower DBs toward temples slowly.','Extend back up, squeeze triceps hard at full lockout.'],
+        mistake:'Moving the upper arm converts this into a pullover — lock the elbow position.'},
+      {name:'Tricep Kickback',tag:'isolation',sets:3,reps:'12–15',defw:10,rest:60,
+        tip:'Hinge forward until torso is nearly parallel. Upper arm glued to your side throughout.',
+        steps:['Hinge at hips, torso almost parallel to floor, back flat.','Elbow bent 90° beside torso — extend the forearm back until arm is fully straight.','Hold 2 s at lockout, lower slowly. Feel the long head activate.'],
+        mistake:'Standing upright — the kickback only works at near-parallel torso angle.'},
+      {name:'DB Russian Twist',tag:'core',sets:3,reps:'20',defw:7.5,rest:45,
+        tip:'CORE FINISHER. Rotate the TORSO, not just the arms. Elevate feet to make it harder.',
+        steps:['Sit, knees bent, feet lightly elevated off floor. Lean back to 45°.','Hold DB with both hands at chest. Rotate torso right — tap DB near floor.','Rotate left, same thing. Left + right = 1 rep. Keep core braced throughout.'],
+        mistake:'Swinging the arms without the torso rotating — the trunk twist is the exercise.'}
+    ]
+  },
+  {
+    id:'back_bi',label:'TUE',name:'Back + Biceps',goal:'Pull Strength · Forearm Focus',
+    hue:'#AC70F0',glow:'rgba(172,112,240,.13)',hr:'172,112,240',
+    muscles:['Lats','Rhomboids','Biceps','Forearms','Brachioradialis'],
+    warmup:'5 min: cat-cow × 10, band pull-aparts × 20, light wrist circles each direction',
+    cooldown:'Doorway lat stretch, standing bicep wall stretch, forearm flexor stretch against wall',
+    synergy:'Zottman curl hits bicep on the up AND brachioradialis on the down — two forearm muscles in one move.',
+    exercises:[
+      {name:'Bent-Over Row',tag:'compound',sets:4,reps:'10–12',defw:22.5,rest:90,
+        tip:'Hinge to 45°, brace like a plank. Pull to navel — not chest. Lead with the elbow.',
+        steps:['Hip hinge, soft knees, flat back. DBs hang below chest, overhand grip.','Drive elbows straight back — lead with elbows, not wrists.','Pause at top squeezing shoulder blades, lower in 3 s.'],
+        mistake:'Rounding the lower back — brace your core before every single rep.'},
+      {name:'Single-Arm Row',tag:'compound',sets:3,reps:'10–12',defw:22.5,rest:90,
+        tip:'Support your free hand on your knee — no bench needed. Let the lat drive the row.',
+        steps:['Hinge forward, free hand resting on same-side knee for support. Flat back.','DB hangs directly below shoulder. Drive elbow back past your hip.','Slight torso rotation is fine — squeeze lat, not shoulder. Lower fully.'],
+        mistake:'Shrugging the shoulder up — it shifts load to the traps, away from the lat.'},
+      {name:'DB Deadlift',tag:'compound',sets:3,reps:'10–12',defw:25,rest:90,
+        tip:'Push the floor away with your legs. This is leg drive + hip hinge together.',
+        steps:['Feet hip-width, DBs at sides. Hinge and bend until DBs reach mid-shin.','Brace core, chest up — then drive heels into the floor hard.','Hips and knees extend together. Lock out tall at top.'],
+        mistake:'Hips rising first turns it into a dangerous back-only lift.'},
+      {name:'Zottman Curl',tag:'isolation',sets:3,reps:'10–12',defw:10,rest:60,
+        tip:'FOREARM BUILDER. Curl up with palms up (bicep), rotate to palms DOWN at the top, lower slowly (brachioradialis). Best of both worlds.',
+        steps:['Stand, DBs at sides, palms forward.','Curl up normally, bicep style — palms face you at the top.','Rotate wrists so palms face DOWN, then lower slowly in 3 s.'],
+        mistake:'Rushing the lowering phase — the slow pronated descent is where forearms grow.'},
+      {name:'DB Wrist Curl',tag:'isolation',sets:3,reps:'15',defw:10,rest:45,
+        tip:'FOREARM ISOLATION. Sit on floor, forearms on thighs. Only the wrist moves.',
+        steps:['Sit cross-legged or kneel. Rest forearms on thighs, palms facing up, DBs in hand.','Let the DBs roll to your fingertips, fully opening the hand.','Curl wrists up, squeezing forearm flexors hard at top.'],
+        mistake:'Moving the elbow or forearm — pin them flat on the thighs.'},
+      {name:'DB Reverse Curl',tag:'isolation',sets:3,reps:'12',defw:8,rest:45,
+        tip:'BRACHIORADIALIS. Pronated (palms-down) grip. This builds the thick outer forearm visible from the front.',
+        steps:['Stand, DBs at sides, palms facing BACK (pronated, thumbs toward each other).','Curl up keeping palms down throughout — fight the urge to rotate.','Lower in 3 s. Full extension at the bottom.'],
+        mistake:'Letting wrists break during the curl — keep them neutral (straight), not bent.'}
+    ]
+  },
+  {
+    id:'legs_glutes',label:'WED',name:'Legs + Glutes',goal:'Lower Power · Core Finisher',
+    hue:'#34C265',glow:'rgba(52,194,101,.13)',hr:'52,194,101',
+    muscles:['Quads','Hamstrings','Glutes','Calves','Core'],
+    warmup:'5 min: hip circles × 10 each, bodyweight squat × 15, glute bridge × 15',
+    cooldown:'Pigeon stretch 30 s each, standing quad stretch, seated hamstring stretch',
+    synergy:'Biggest muscle groups = biggest metabolism boost and GH spike. This is your hardest, most important day.',
+    exercises:[
+      {name:'Goblet Squat',tag:'compound',sets:4,reps:'12–15',defw:22.5,rest:90,
+        tip:'Hold DB vertically at chest. Push knees OUT, sit BETWEEN your heels — go below parallel.',
+        steps:['Feet shoulder-width, toes 15° out. DB held vertical at chest.','Sit back and down between your heels — go well below parallel.','Drive through heels, push knees out. Chest stays tall, no forward lean.'],
+        mistake:'Knees caving inward — actively push them out on every rep.'},
+      {name:'Romanian Deadlift',tag:'compound',sets:4,reps:'10–12',defw:25,rest:90,
+        tip:'Push hips BACK, not down. Feel the hamstring load under tension — that is the signal.',
+        steps:['Stand, DBs in front of thighs, slight knee bend (keep it soft throughout).','Hinge at hips — drive DBs down your shins, back flat, hips pushing back.','When hamstrings are fully loaded (mid-shin), drive hips forward to stand.'],
+        mistake:'Bending knees progressively converts it to a regular deadlift — knees are soft but constant.'},
+      {name:'DB Reverse Lunge',tag:'compound',sets:3,reps:'10 each',defw:12.5,rest:90,
+        tip:'Step BACK, not forward — much easier on the knee. Front shin stays vertical.',
+        steps:['Stand, DBs at sides. Step one foot directly back.','Lower back knee toward floor — front shin vertical, chest tall.','Drive through front heel to return. Alternate legs or do all on one side.'],
+        mistake:'Front knee shooting past your toes — step far enough back to prevent it.'},
+      {name:'DB Glute Bridge',tag:'isolation',sets:3,reps:'15',defw:22.5,rest:60,
+        tip:'DB on hip crease, both hands hold it. Squeeze glutes HARD at top and hold 2 s. No lower back arch.',
+        steps:['Lie on floor, knees bent, feet flat hip-width. DB resting on hip crease.','Drive hips up to ceiling squeezing glutes at the top.','Hold 2 s — tuck ribs down, avoid hyperextending the lower back. Lower slowly.'],
+        mistake:'Arching the lower back at the top — squeeze ribs down and glutes hard.'},
+      {name:'Calf Raise',tag:'isolation',sets:4,reps:'20–25',defw:20,rest:45,
+        tip:'Use a step edge or thick book. Full range only: full drop, full rise. Slow 3 s lowering.',
+        steps:['Stand on a step edge (or thick book), DBs in hands at sides.','Lower heels below the step until calves are fully stretched.','Rise on toes to full height, pause 1 s at top, lower in 3 s.'],
+        mistake:'Bouncing at the bottom uses elastic energy, not calf muscle — slow down.'},
+      {name:'Floor Leg Raise',tag:'core',sets:3,reps:'15',defw:0,rest:45,
+        tip:'CORE FINISHER. Keep lower back pressed to the floor. Slow down = harder lower abs.',
+        steps:['Lie flat, hands under hips (palms down) to protect lower back.','Keep legs straight, raise until perpendicular to floor.','Lower slowly in 3 s — stop just before heels touch the floor. That tension is the goal.'],
+        mistake:'Letting lower back arch off the floor — press it flat before every rep.'}
+    ]
+  },
+  {
+    id:'shoulders_traps',label:'THU',name:'Shoulders + Traps',goal:'Overhead Strength · Forearm Focus',
+    hue:'#FF9F0A',glow:'rgba(255,159,10,.13)',hr:'255,159,10',
+    muscles:['Anterior Delt','Medial Delt','Rear Delt','Traps','Forearms'],
+    warmup:'5 min: neck rolls, arm circles, empty-hand press × 15, face pull substitute: band pull-apart × 20',
+    cooldown:'Cross-body shoulder stretch, chest opener, trap neck stretch (ear to shoulder) 20 s each side',
+    synergy:'Chest rested 3 days. Delts now get full fresh attention — this is when you notice the shoulder width growing.',
+    exercises:[
+      {name:'Seated DB Press',tag:'compound',sets:4,reps:'10–12',defw:17.5,rest:90,
+        tip:'Sit cross-legged on the floor or on a chair. Press STRAIGHT up — not forward. Ribs stay down.',
+        steps:['Sit on floor cross-legged or in a chair. DBs at ear level, elbows ~90°.','Press straight overhead in a vertical path — not angled forward.','Lower to ear level with control. Stop just short of lockout each rep.'],
+        mistake:'Pressing DBs forward instead of vertically — the path should be straight up.'},
+      {name:'Arnold Press',tag:'compound',sets:3,reps:'10–12',defw:12.5,rest:90,
+        tip:'Start palms facing YOU. Rotate to palms forward as you press. Reverse on the way down. Hits all 3 delt heads.',
+        steps:['Sit, DBs at chin height, palms facing your face.','Press up while rotating palms outward — fully facing forward at the top.','Reverse rotation as you lower back to chin. Full rotation every rep.'],
+        mistake:'Going heavy and skipping the rotation — the technique is the exercise.'},
+      {name:'Lateral Raise',tag:'isolation',sets:3,reps:'12–15',defw:8,rest:60,
+        tip:'Slight forward lean, lead with elbows. Pinky slightly higher than thumb. Lower in 4 s — that eccentric builds the medial delt.',
+        steps:['Stand with 10° forward lean, DBs at sides.','Raise arms out to sides leading with elbows — not wrists.','Lower in 4 s. That slow eccentric is where medial delt width comes from.'],
+        mistake:'Using momentum and shrugging — lighter weight, dead-slow control always wins here.'},
+      {name:'Rear Delt Fly',tag:'isolation',sets:3,reps:'12–15',defw:7.5,rest:60,
+        tip:'Most people skip this and end up with the rounded-forward shoulder look. This is your posture fix.',
+        steps:['Hinge forward until torso is nearly parallel to floor, DBs hanging.','Raise both elbows out to the sides in a reverse fly arc.','Squeeze shoulder blades at top, lower slowly. Shoulders stay depressed.'],
+        mistake:'Shrugging traps to help — keep shoulders pressed down throughout.'},
+      {name:'DB Shrug',tag:'isolation',sets:3,reps:'15–20',defw:22.5,rest:45,
+        tip:'Go straight UP — not rolling. Rolling the shoulder stresses the AC joint with no extra benefit.',
+        steps:['Stand tall, heavy DBs at sides.','Shrug straight up toward ears — no rolling forward or backward.','Hold 1–2 s at top, lower fully in 2 s.'],
+        mistake:'Rolling shoulders adds AC joint stress — straight up only.'},
+      {name:'Reverse Wrist Curl',tag:'isolation',sets:3,reps:'15',defw:8,rest:45,
+        tip:'FOREARM FINISHER. Opposite of wrist curl — trains the extensor muscles on top of the forearm. Critical for forearm balance.',
+        steps:['Sit, forearms on thighs, palms facing DOWN, DBs in hand.','Lower DBs as far as possible (wrists flex down).','Extend wrists up, squeezing the back of the forearm at the top.'],
+        mistake:'Using a weight too heavy to get full range — go lighter and feel the extensors.'}
+    ]
+  },
+  {
+    id:'sixpack_arms',label:'FRI',name:'Six Pack + Arms',goal:'Definition · Core Shred',
+    hue:'#FF6058',glow:'rgba(255,96,88,.13)',hr:'255,96,88',
+    muscles:['Abs','Obliques','Biceps','Triceps','Forearms'],
+    warmup:'5 min: plank 30 s, 10 bodyweight crunches, 10 leg raises, arm swing × 20',
+    cooldown:'Cobra pose 3 × 20 s, seated spinal twist, overhead tricep stretch',
+    synergy:'Friday = dedicated six pack day. Arms get their second hit. Core needs 2× weekly direct work to show through — this is the second.',
+    exercises:[
+      {name:'DB Weighted Crunch',tag:'core',sets:3,reps:'15',defw:10,rest:45,
+        tip:'Hold DB on chest, not behind head (neck strain risk). CURL the spine — do not just lift your head.',
+        steps:['Lie flat, knees bent, DB held at chest with both hands.','Press lower back to floor. Curl shoulders off floor by contracting abs.','Hold at top 1 s. Lower slowly — do not drop back down.'],
+        mistake:'Pulling the neck or using momentum — if you need to jerk, drop the weight.'},
+      {name:'Leg Raises',tag:'core',sets:3,reps:'15',defw:0,rest:45,
+        tip:'Lower ABS. Keep legs as straight as possible. The 3 s lower is the hardest and most effective part.',
+        steps:['Lie flat, hands under hips (palms down), legs straight.','Raise legs to 90° — lower back pressed firmly to floor.','Lower in 3 s, stop 2–3 cm above the floor (do not rest), raise again.'],
+        mistake:'Letting the lower back arch off the floor — hands under hips and press down.'},
+      {name:'DB Russian Twist',tag:'core',sets:3,reps:'20',defw:7.5,rest:45,
+        tip:'OBLIQUES. Feet elevated, torso at 45°. Rotate the TORSO — not just swinging arms.',
+        steps:['Sit, feet elevated, leaning back 45°. DB held with both hands at chest.','Rotate torso fully right, tap DB near floor beside hip.','Rotate fully left, same thing. Left + right = 1 rep.'],
+        mistake:'Arms swinging while torso stays still — the trunk rotation is the exercise.'},
+      {name:'DB Side Bend',tag:'core',sets:3,reps:'15 each',defw:12.5,rest:45,
+        tip:'OBLIQUES + SERRATUS (the side abs that frame the six pack). Hold DB on one side only, bend away from it.',
+        steps:['Stand, DB in right hand only, left hand behind head.','Slowly bend right (toward the DB) as a control movement.','Pull back up using left oblique, squeezing hard. All reps one side, then switch.'],
+        mistake:'Bending forward or back instead of purely sideways — the movement is lateral only.'},
+      {name:'Hammer Curl',tag:'isolation',sets:3,reps:'12',defw:12.5,rest:60,
+        tip:'Neutral grip targets brachialis and thick forearm — gives arms the dense "full" look.',
+        steps:['Stand, DBs at sides, palms facing each other (thumbs up).','Curl both together, thumbs pointing up throughout.','Pause at shoulder, lower in 3 s. Full extension every rep.'],
+        mistake:'Letting elbows drift forward — they stay pinned at your sides.'},
+      {name:'Tricep Overhead Ext',tag:'isolation',sets:3,reps:'12',defw:15,rest:60,
+        tip:'LONG HEAD — only activates when the arm is overhead. Single most effective tricep mass builder.',
+        steps:['Stand or sit. Hold one DB with both hands, arms straight overhead.','Lower DB behind head by hinging at elbows only — keep elbows narrow.','Extend up, squeeze triceps at top, hold 1 s.'],
+        mistake:'Flaring elbows — narrow elbows throughout or long head loses tension.'}
+    ]
+  }
+];
+
+const KEY='dbpro2';
+let ST,restMax,restLeft,restInterval,clockInterval,activeDay;
+
+function loadST(){try{ST=JSON.parse(localStorage.getItem(KEY)||'null')}catch(e){ST=null};if(!ST)ST={sess:{},prefs:{units:'kg',restC:90,restI:60}};if(!ST.sess)ST.sess={};if(!ST.prefs)ST.prefs={units:'kg',restC:90,restI:60}}
+function saveST(){try{localStorage.setItem(KEY,JSON.stringify(ST))}catch(e){}}
+function todayK(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+function getToday(){const k=todayK();if(!ST.sess[k])ST.sess[k]={sets:{},weights:{},startedAt:null};return ST.sess[k]}
+function parseReps(r){return parseInt(r)||10}
+function countDone(dayId){const s=getToday().sets;let n=0;DAYS.find(x=>x.id===dayId).exercises.forEach((_,i)=>{(s[dayId+'_'+i]||[]).forEach(v=>{if(v)n++})});return n}
+function totalSets(dayId){return DAYS.find(x=>x.id===dayId).exercises.reduce((a,ex)=>a+ex.sets,0)}
+function isDayDone(dayId){return countDone(dayId)>=totalSets(dayId)}
+function calcVol(dayId){const sess=getToday();let v=0;DAYS.find(x=>x.id===dayId).exercises.forEach((ex,i)=>{const chips=sess.sets[dayId+'_'+i]||[];const w=sess.weights[dayId+'_'+i]??ex.defw;v+=chips.filter(Boolean).length*w*parseReps(ex.reps)});return v}
+function fmtVol(v){return v>=1000?(v/1000).toFixed(1)+'k':String(Math.round(v))}
+function getUnit(){return ST.prefs.units==='lbs'?'lbs':'kg'}
+function toDisplay(w){return ST.prefs.units==='lbs'?Math.round(w*2.20462*2)/2:w}
+function getPrevW(dayId,exIdx){const key=dayId+'_'+exIdx,today=todayK();for(const k of Object.keys(ST.sess).filter(k=>k<today).sort().reverse()){if(ST.sess[k].weights&&ST.sess[k].weights[key]!==undefined)return ST.sess[k].weights[key]}return null}
+function getMaxW(dayId,exIdx){const key=dayId+'_'+exIdx;let mx=0;Object.keys(ST.sess).filter(k=>k<todayK()).forEach(k=>{if(ST.sess[k].weights&&ST.sess[k].weights[key]!==undefined)mx=Math.max(mx,ST.sess[k].weights[key])});return mx}
+function getStreak(){let streak=0,d=new Date();for(let i=0;i<30;i++){const k=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');const found=ST.sess[k]&&Object.values(ST.sess[k].sets||{}).some(a=>a.some(Boolean));if(found)streak++;else if(i>0)break;d.setDate(d.getDate()-1)}return streak}
+
+function renderAll(){renderTabs();renderPanels();document.getElementById('streak-n').textContent=getStreak();const d=new Date().getDay();const map={1:0,2:1,3:2,4:3,5:4};activeDay=DAYS[map[d]??0].id;switchDay(activeDay)}
+function renderTabs(){const bar=document.getElementById('tabs-bar');bar.innerHTML='';DAYS.forEach(d=>{const btn=document.createElement('button');btn.className='ntab';btn.setAttribute('role','tab');btn.setAttribute('data-id',d.id);btn.style.setProperty('--h',d.hue);btn.innerHTML=`<span>${d.label}</span><span class="ntab-sub">${d.name.split(' ').slice(0,2).join(' ')}</span><div class="ntab-dot"></div>`;btn.onclick=()=>switchDay(d.id);if(isDayDone(d.id))btn.classList.add('done');bar.appendChild(btn)})}
+function renderPanels(){const c=document.getElementById('panels');c.innerHTML='';DAYS.forEach(d=>{const sess=getToday();const p=document.createElement('div');p.className='dpanel';p.id='panel-'+d.id;p.style.setProperty('--h',d.hue);p.style.setProperty('--g',d.glow);p.style.setProperty('--hr',d.hr);p.innerHTML=`<div class="dhead"><div class="dhead-top"><div><div class="dname">${d.name}</div><div class="dgoal">${d.goal}</div></div><div class="vol-chip" id="vol-${d.id}">${fmtVol(calcVol(d.id))} ${getUnit()}</div></div><div class="dmeta">${d.muscles.map(m=>`<span class="mchip">${m}</span>`).join('')}</div></div><div class="prog-wrap"><div class="prog-row"><span class="prog-label">SETS DONE</span><span class="prog-count" id="prog-count-${d.id}">${countDone(d.id)} / ${totalSets(d.id)}</span></div><div class="prog-bar"><div class="prog-fill" id="prog-fill-${d.id}" style="width:${(countDone(d.id)/totalSets(d.id)*100).toFixed(1)}%"></div></div></div><div class="info-bar"><span class="ib-icon">🔥</span><span><strong>Trainer note:</strong> ${d.synergy}</span></div><div class="info-bar"><span class="ib-icon">🤸</span><span><strong>Warm-up:</strong> ${d.warmup}</span></div><div class="exlist" id="exlist-${d.id}">${d.exercises.map((ex,i)=>renderExCard(d,ex,i,sess)).join('')}</div><div class="info-bar" style="margin-top:14px"><span class="ib-icon">❄️</span><span><strong>Cool-down:</strong> ${d.cooldown}</span></div>`;c.appendChild(p)})}
+
+function renderExCard(d,ex,i,sess){const key=d.id+'_'+i;const chips=sess.sets[key]||(sess.sets[key]=Array(ex.sets).fill(false));const w=sess.weights[key]??ex.defw;const prevW=getPrevW(d.id,i);const maxW=getMaxW(d.id,i);const isPR=w>maxW&&maxW>0;const hint=prevW!==null?`Last: ${toDisplay(prevW)} ${getUnit()}`:'First session';const done=chips.every(Boolean);const isBodyweight=ex.defw===0;return `<div class="excard${done?' done':''}" id="excard-${d.id}-${i}"><div class="ex-hd" onclick="toggleExpand('${d.id}',${i})"><span class="ex-badge ${ex.tag}">${ex.tag}</span><div class="ex-info"><div class="ex-name">${ex.name}</div><div class="ex-tip">${ex.tip}</div></div><button class="ex-expand" aria-label="Expand">▾</button></div><div class="ex-det" id="exdet-${d.id}-${i}"><div class="ex-det-inner"><div class="ex-steps">${ex.steps.map((s,n)=>`<div class="ex-step"><div class="ex-step-n">${n+1}</div><div class="ex-step-txt">${s}</div></div>`).join('')}</div><div class="ex-mistake"><span class="ex-mistake-icon">⚠️</span>${ex.mistake}</div></div></div><div class="ex-sep"></div><div class="ex-tracker"><div class="w-row">${isBodyweight?`<span class="w-unit" style="color:var(--fgm)">Bodyweight</span>`:`<button class="w-btn" onclick="chgW('${d.id}',${i},-2.5)">−</button><span class="w-val" id="wval-${d.id}-${i}">${toDisplay(w)}</span><span class="w-unit">${getUnit()}</span><button class="w-btn" onclick="chgW('${d.id}',${i},2.5)">+</button>`}<span class="w-hint" id="whint-${d.id}-${i}">${isPR?'<span class="w-pr">🏆 PR!</span>':hint}</span></div><div class="sets-row"><span class="sets-label">${ex.sets} sets × ${ex.reps} reps</span><div class="sets-chips" id="chips-${d.id}-${i}">${chips.map((_,si)=>`<button class="set-chip${chips[si]?' done':''}" id="chip-${d.id}-${i}-${si}" onclick="toggleSet('${d.id}',${i},${si})">${si+1}</button>`).join('')}</div></div></div></div>`}
+
+function switchDay(id){activeDay=id;document.querySelectorAll('.dpanel').forEach(p=>p.classList.remove('on'));document.querySelectorAll('.ntab').forEach(t=>t.classList.remove('on'));const panel=document.getElementById('panel-'+id);if(panel)panel.classList.add('on');const tab=document.querySelector(`.ntab[data-id="${id}"]`);if(tab){tab.classList.add('on');tab.scrollIntoView({block:'nearest',inline:'center',behavior:'smooth'})}}
+function toggleExpand(dayId,i){document.getElementById('excard-'+dayId+'-'+i).classList.toggle('open')}
+function toggleSet(dayId,exIdx,si){const sess=getToday();const key=dayId+'_'+exIdx;const d=DAYS.find(x=>x.id===dayId);const ex=d.exercises[exIdx];if(!sess.sets[key])sess.sets[key]=Array(ex.sets).fill(false);sess.sets[key][si]=!sess.sets[key][si];if(!sess.startedAt&&sess.sets[key][si]){sess.startedAt=Date.now();startClock(sess.startedAt)}saveST();refreshChip(dayId,exIdx,si);refreshCard(dayId,exIdx);refreshProgress(dayId);refreshTab(dayId);checkPR(dayId,exIdx);if(sess.sets[key][si]){startRest(ex.tag==='compound'?ST.prefs.restC:ST.prefs.restI,ex.name,si+1,dayId)}else{skipRest()}if(isDayDone(dayId))setTimeout(()=>showCeleb(dayId),400)}
+function refreshChip(dayId,exIdx,si){const chips=(getToday().sets[dayId+'_'+exIdx]||[]);const chip=document.getElementById('chip-'+dayId+'-'+exIdx+'-'+si);if(chip){if(chips[si])chip.classList.add('done');else chip.classList.remove('done')}}
+function refreshCard(dayId,exIdx){const chips=(getToday().sets[dayId+'_'+exIdx]||[]);const card=document.getElementById('excard-'+dayId+'-'+exIdx);if(!card)return;if(chips.length&&chips.every(Boolean))card.classList.add('done');else card.classList.remove('done')}
+function refreshProgress(dayId){const done=countDone(dayId),total=totalSets(dayId);const fill=document.getElementById('prog-fill-'+dayId);const count=document.getElementById('prog-count-'+dayId);const vol=document.getElementById('vol-'+dayId);if(fill)fill.style.width=(total>0?(done/total*100):0).toFixed(1)+'%';if(count)count.textContent=done+' / '+total;if(vol)vol.textContent=fmtVol(calcVol(dayId))+' '+getUnit()}
+function refreshTab(dayId){const tab=document.querySelector(`.ntab[data-id="${dayId}"]`);if(!tab)return;if(isDayDone(dayId))tab.classList.add('done');else tab.classList.remove('done')}
+function checkPR(dayId,exIdx){const sess=getToday();const key=dayId+'_'+exIdx;const d=DAYS.find(x=>x.id===dayId);const w=sess.weights[key]??d.exercises[exIdx].defw;const maxW=getMaxW(dayId,exIdx);const prevW=getPrevW(dayId,exIdx);const hint=document.getElementById('whint-'+dayId+'-'+exIdx);if(hint){if(w>maxW&&maxW>0)hint.innerHTML='<span class="w-pr">🏆 PR!</span>';else hint.textContent=prevW!==null?'Last: '+toDisplay(prevW)+' '+getUnit():'First session'}}
+function chgW(dayId,exIdx,delta){const sess=getToday();const key=dayId+'_'+exIdx;const ex=DAYS.find(x=>x.id===dayId).exercises[exIdx];const nw=Math.max(0,(sess.weights[key]??ex.defw)+delta);sess.weights[key]=nw;saveST();const el=document.getElementById('wval-'+dayId+'-'+exIdx);if(el)el.textContent=toDisplay(nw);checkPR(dayId,exIdx);refreshProgress(dayId)}
+function startRest(sec,exName,setNum,dayId){skipRest();const d=DAYS.find(x=>x.id===dayId);restMax=sec;restLeft=sec;const bar=document.getElementById('rest-bar');bar.style.setProperty('--rh',d?d.hue:'#5B9BFF');bar.classList.add('on');document.getElementById('rest-time').textContent=fmtSec(restLeft);document.getElementById('rest-fill').style.width='100%';document.getElementById('rest-exname').textContent=`After set ${setNum} — ${exName}`;restInterval=setInterval(()=>{restLeft--;document.getElementById('rest-time').textContent=fmtSec(restLeft);document.getElementById('rest-fill').style.width=(restLeft/restMax*100).toFixed(1)+'%';if(restLeft<=0){playBeep();skipRest()}},1000)}
+function fmtSec(s){return Math.floor(s/60)+':'+(String(s%60).padStart(2,'0'))}
+function addRest(s){restLeft+=s;restMax+=s;document.getElementById('rest-time').textContent=fmtSec(restLeft)}
+function skipRest(){clearInterval(restInterval);restInterval=null;document.getElementById('rest-bar').classList.remove('on')}
+function playBeep(){try{const ctx=new(window.AudioContext||window.webkitAudioContext)();[0,.15,.3].forEach(t=>{const o=ctx.createOscillator(),g=ctx.createGain();o.connect(g);g.connect(ctx.destination);o.frequency.value=880;o.type='sine';g.gain.setValueAtTime(0.3,ctx.currentTime+t);g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+t+.15);o.start(ctx.currentTime+t);o.stop(ctx.currentTime+t+.15)})}catch(e){}}
+function startClock(startedAt){clearInterval(clockInterval);function tick(){const s=Math.floor((Date.now()-startedAt)/1000);document.getElementById('tclock').textContent=String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0')}tick();clockInterval=setInterval(tick,1000)}
+function showCeleb(dayId){const d=DAYS.find(x=>x.id===dayId);document.getElementById('celeb').style.setProperty('--h',d.hue);document.getElementById('celeb-card').style.borderColor=d.hue;const msgs=['Crushed it!','Beast mode!',"That's a W!",'Get some!'];document.getElementById('celeb-title').textContent=msgs[Math.floor(Math.random()*msgs.length)];document.getElementById('celeb-sub').textContent=`${d.name} done. Volume: ${fmtVol(calcVol(dayId))} ${getUnit()} lifted.`;spawnParticles(d.hue);document.getElementById('celeb').classList.add('on')}
+function closeCeleb(){document.getElementById('celeb').classList.remove('on')}
+function spawnParticles(hue){const card=document.getElementById('celeb-card');for(let i=0;i<18;i++){const p=document.createElement('div');p.className='particle';p.style.cssText=`left:${Math.random()*100}%;top:${Math.random()*100}%;background:${hue};opacity:${Math.random()*.8+.2};width:${4+Math.random()*6}px;height:${4+Math.random()*6}px;border-radius:${Math.random()>.5?'50%':'2px'};animation:pfloat ${1+Math.random()*1.5}s ease forwards;`;card.appendChild(p);setTimeout(()=>p.remove(),2500)}}
+function openM(id){if(id==='history')renderHistory();if(id==='settings')renderSettings();document.getElementById('modal-'+id).classList.add('on')}
+function closeM(id){document.getElementById('modal-'+id).classList.remove('on')}
+function renderHistory(){const body=document.getElementById('hist-body');const today=new Date();const calStart=new Date(today);calStart.setDate(calStart.getDate()-27);let cal='<div class="cal-grid">';['S','M','T','W','T','F','S'].forEach(h=>{cal+=`<div class="cal-hdr">${h}</div>`});for(let s=calStart.getDay();s>0;s--)cal+='<div></div>';for(let i=0;i<28;i++){const d=new Date(calStart);d.setDate(calStart.getDate()+i);const k=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');const isToday=k===todayK();const sess=ST.sess[k];const hasData=sess&&Object.values(sess.sets||{}).some(a=>a.some(Boolean));let dc='',dg='';if(hasData){const map={1:0,2:1,3:2,4:3,5:4};const idx=map[d.getDay()];if(idx!==undefined){dc=DAYS[idx].hue;dg=DAYS[idx].glow}}cal+=`<div class="cal-day${hasData?' has-data':''}${isToday?' today':''}" style="${dc?`--dc:${dc};--dg:${dg};`:''}">${d.getDate()}</div>`}cal+='</div>';const totalVol=Object.values(ST.sess).reduce((a,s)=>a+Object.entries(s.weights||{}).reduce((b,[k,w])=>b+((s.sets||{})[k]||[]).filter(Boolean).length*w*10,0),0);const daysLogged=Object.values(ST.sess).filter(s=>Object.values(s.sets||{}).some(a=>a.some(Boolean))).length;const prCount=DAYS.reduce((a,d)=>a+d.exercises.filter((_,i)=>getMaxW(d.id,i)>0).length,0);body.innerHTML=cal+`<div class="stats-grid"><div class="stat-card"><div class="stat-n">${getStreak()}</div><div class="stat-l">Day Streak</div></div><div class="stat-card"><div class="stat-n">${daysLogged}</div><div class="stat-l">Days Logged</div></div><div class="stat-card"><div class="stat-n">${fmtVol(totalVol)}</div><div class="stat-l">Total Volume</div></div><div class="stat-card"><div class="stat-n">${prCount}</div><div class="stat-l">PRs Set</div></div></div>`}
+let resetTaps=0,resetTimeout;
+function renderSettings(){const p=ST.prefs;document.getElementById('sett-body').innerHTML=`<div class="set-row"><div><div class="set-label">Weight Units</div><div class="set-sub">Display all weights in</div></div><div class="seg"><button class="seg-btn${p.units==='kg'?' on':''}" onclick="setPref('units','kg')">kg</button><button class="seg-btn${p.units==='lbs'?' on':''}" onclick="setPref('units','lbs')">lbs</button></div></div><div class="set-row"><div><div class="set-label">Compound Rest</div><div class="set-sub">After big multi-joint exercises</div></div><div class="seg"><button class="seg-btn${p.restC===60?' on':''}" onclick="setPref('restC',60)">60s</button><button class="seg-btn${p.restC===90?' on':''}" onclick="setPref('restC',90)">90s</button><button class="seg-btn${p.restC===120?' on':''}" onclick="setPref('restC',120)">2min</button></div></div><div class="set-row"><div><div class="set-label">Isolation Rest</div><div class="set-sub">After single-joint exercises</div></div><div class="seg"><button class="seg-btn${p.restI===45?' on':''}" onclick="setPref('restI',45)">45s</button><button class="seg-btn${p.restI===60?' on':''}" onclick="setPref('restI',60)">60s</button><button class="seg-btn${p.restI===90?' on':''}" onclick="setPref('restI',90)">90s</button></div></div><div class="set-row"><div><div class="set-label">Theme</div></div><div class="seg"><button class="seg-btn${!document.documentElement.dataset.theme?' on':''}" onclick="setTheme('')">Auto</button><button class="seg-btn${document.documentElement.dataset.theme==='light'?' on':''}" onclick="setTheme('light')">Light</button><button class="seg-btn${document.documentElement.dataset.theme==='dark'?' on':''}" onclick="setTheme('dark')">Dark</button></div></div><button class="rst-btn" id="rst-btn" onclick="doReset()">⚠️ Reset All Data</button>`}
+function setPref(k,v){ST.prefs[k]=v;saveST();renderSettings();renderPanels();switchDay(activeDay)}
+function setTheme(t){if(t)document.documentElement.dataset.theme=t;else delete document.documentElement.dataset.theme;renderSettings()}
+function doReset(){resetTaps++;const btn=document.getElementById('rst-btn');if(resetTaps===1){btn.textContent='⚠️ Tap again to confirm — this cannot be undone';resetTimeout=setTimeout(()=>{resetTaps=0;btn.textContent='⚠️ Reset All Data'},3000)}else{clearTimeout(resetTimeout);resetTaps=0;ST.sess={};saveST();renderAll();closeM('settings')}}
+
+loadST();
+renderAll();
+const sess=getToday();
+if(sess.startedAt)startClock(sess.startedAt);
+</script>
+</body>
+</html>
